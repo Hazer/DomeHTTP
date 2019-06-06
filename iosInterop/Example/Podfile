@@ -1,0 +1,6 @@
+use_frameworks!
+target 'iosInterop_Tests' do
+  pod 'iosInterop', :path => '../'
+  
+  
+end

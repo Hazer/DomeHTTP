@@ -1,0 +1,44 @@
+plugins {
+    id 'kotlin-multiplatform'
+    id 'kotlinx-serialization'
+    id 'com.android.application'
+    id("com.getkeepsafe.dexcount")
+}
+
+apply from: "${rootProject.rootDir}/gradle/android_mpp_commons.gradle"
+
+android {
+    defaultConfig {
+        applicationId "io.vithor.sample.domehttp"
+    }
+}
+
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(":DomeHTTP")
+            }
+        }
+    }
+
+    targets {
+        fromPreset(presets.android, 'androidApp')
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}

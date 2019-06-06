@@ -1,0 +1,144 @@
+plugins {
+    id 'kotlin-multiplatform'
+    id 'kotlinx-serialization'
+    id 'com.android.library'
+    id("org.jetbrains.kotlin.native.cocoapods")
+}
+
+apply from: "${rootProject.rootDir}/gradle/android_mpp_commons.gradle"
+// apply plugin: 'com.android.library'
+
+repositories {
+    google()
+    gradlePluginPortal()
+    mavenCentral()
+    jcenter()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
+}
+
+group 'io.vithor.dome-http'
+version '0.0.8-alpha.1'
+
+apply plugin: 'maven-publish'
+
+kotlin {
+    targets {
+        fromPreset(presets.android, 'androidLib')
+        jvm()
+
+        def buildForDevice = project.findProperty("kotlin.native.cocoapods.target") == "ios_arm"
+        if (buildForDevice) {
+            fromPreset(presets.iosArm64, "iOS64") {
+                compilations.main.extraOpts "-Xobjc-generics"
+            }
+            fromPreset(presets.iosArm32, "iOS32") {
+                compilations.main.extraOpts "-Xobjc-generics"
+            }
+
+            def iOSMain = sourceSets.create("ios")
+            sourceSets["iOS64Main"].dependsOn(iOSMain)
+            sourceSets["iOS32Main"].dependsOn(iOSMain)
+        } else {
+            fromPreset(presets.iosX64, "ios") {
+                compilations.main.extraOpts "-Xobjc-generics"
+            }
+        }
+    }
+
+    println(targets.names)
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-common')
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.2.1'
+
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.11.0"
+
+            }
+
+            languageSettings {
+//                enableLanguageFeature('InlineClasses')
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
+            }
+        }
+        androidLibMain {
+            dependencies {
+                implementation kotlin('stdlib')
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
+//                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
+
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0"
+
+                implementation "com.squareup.okhttp3:okhttp:3.14.1"
+            }
+        }
+        androidLibTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-junit')
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1'
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation kotlin('stdlib')
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
+
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.0"
+
+                implementation "com.squareup.okhttp3:okhttp:3.14.1"
+
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation kotlin('test')
+                implementation kotlin('test-junit')
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.2.1'
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-native:1.2.1'
+
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:0.11.0"
+            }
+        }
+        iosTest {
+            dependencies {
+                
+            }
+        }
+    }
+
+    cocoapods {
+        // Configure fields required by CocoaPods.
+        summary = "DomeHTTP is a Kotlin Multiplatform Module"
+        homepage = "https://vithor.io/io.vithor.domehttp"
+    }
+}
+
+task iosTest {
+    def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
+    dependsOn kotlin.targets.ios.binaries.getExecutable('test', 'DEBUG').linkTaskName
+    group = JavaBasePlugin.VERIFICATION_GROUP
+    description = "Runs tests for target 'ios' on an iOS simulator"
+
+    doLast {
+        def binary = kotlin.targets.ios.binaries.getExecutable('test', 'DEBUG').outputFile
+        exec {
+            commandLine 'xcrun', 'simctl', 'spawn', device, binary.absolutePath
+        }
+    }
+}
+
+// configurations {
+    // compileClasspath
+// }
+

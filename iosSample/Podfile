@@ -1,0 +1,22 @@
+use_frameworks!
+
+platform :ios, '9.0'
+
+target 'iosSample' do
+
+  pod 'iosInterop', :path => '../iosInterop/'
+  pod 'DomeHTTP', :path => '../lib/'
+
+  # Pods for iosSample
+
+  target 'iosSampleTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'iosSampleUITests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+end

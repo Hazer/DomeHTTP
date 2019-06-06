@@ -1,0 +1,16 @@
+PODS:
+  - iosInterop (0.1.0)
+
+DEPENDENCIES:
+  - iosInterop (from `../`)
+
+EXTERNAL SOURCES:
+  iosInterop:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  iosInterop: b149ff282d8368f96b5f8989c5ba8915a7dce01f
+
+PODFILE CHECKSUM: 736da8e8b3c416073a3a0b692adc3c50dd20391c
+
+COCOAPODS: 1.6.1
