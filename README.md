@@ -1,4 +1,4 @@
-# DomeHTTP Client (WIP)
+# DomeHTTP Client (WIP) [ ![Download](https://api.bintray.com/packages/hazer/maven/DomeHTTP/images/download.svg) ](https://bintray.com/hazer/maven/DomeHTTP/_latestVersion)
 
 This project is a Kotlin Multiplatform HTTP Client, totally work-in-progress, implementation is not optimal, code not tested, API not final.
 
@@ -17,16 +17,16 @@ repositories {
 }
 
 // Common Module
-implementation "io.vithor.dome-http:client-common:0.0.8-alpha.1"
+implementation "io.vithor.dome-http:client-common:$domeVersion"
 
 // Android Module
-implementation "io.vithor.dome-http:client-android:0.0.8-alpha.1"
+implementation "io.vithor.dome-http:client-android:$domeVersion"
 
 // iOS Module
-implementation "io.vithor.dome-http:client-ios:0.0.8-alpha.1"
+implementation "io.vithor.dome-http:client-ios:$domeVersion"
 
 // JVM Module
-implementation "io.vithor.dome-http:client-jvm:0.0.8-alpha.1"
+implementation "io.vithor.dome-http:client-jvm:$domeVersion"
 ```
 
 ## Usages
