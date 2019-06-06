@@ -9,6 +9,26 @@ This project is a Kotlin Multiplatform HTTP Client, totally work-in-progress, im
 * Make it easy to replace the engine, if needed
 * Someday iOS target will work flawlessly
 
+## Installation
+
+```
+repositories {
+    maven { url "https://dl.bintray.com/hazer/maven" }
+}
+
+// Common Module
+implementation "io.vithor.dome-http:client-common:0.0.8-alpha.1"
+
+// Android Module
+implementation "io.vithor.dome-http:client-android:0.0.8-alpha.1"
+
+// iOS Module
+implementation "io.vithor.dome-http:client-ios:0.0.8-alpha.1"
+
+// JVM Module
+implementation "io.vithor.dome-http:client-jvm:0.0.8-alpha.1"
+```
+
 ## Usages
 First you need to declare the Client configuration using default provided engines (you can create your own engine):
 

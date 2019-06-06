@@ -50,6 +50,9 @@ publishing {
                 it.artifact stubJavadoc
                 it.artifact sourcesJar
                 break
+            case 'metadata':
+                it.artifactId = "${project.name}-common"
+                break
             case 'android':
                 it.artifactId = "${project.name}-$type"
                 break
