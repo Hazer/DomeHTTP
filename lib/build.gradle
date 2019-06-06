@@ -5,8 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.native.cocoapods")
 }
 
+
 apply from: "${rootProject.rootDir}/gradle/android_mpp_commons.gradle"
-// apply plugin: 'com.android.library'
 
 repositories {
     google()
@@ -16,10 +16,7 @@ repositories {
     maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
-group 'io.vithor.dome-http'
-version '0.0.8-alpha.1'
-
-apply plugin: 'maven-publish'
+apply plugin: 'org.jetbrains.dokka'
 
 kotlin {
     targets {
@@ -117,6 +114,24 @@ kotlin {
         }
     }
 
+    sourceSets.all {
+        languageSettings {
+            useExperimentalAnnotation("objc-generics")
+            useExperimentalAnnotation("kotlin.ExperimentalMultiplatform")
+            useExperimentalAnnotation("kotlin.Experimental")
+            useExperimentalAnnotation('kotlin.ExperimentalUnsignedTypes')
+            useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
+        }
+    }
+
+//    targets.all { target ->
+//        def publication = publishing.publications.findByName(target.name)
+//
+//        if (publication != null) {
+//            publication.artifact emptyJavadoc
+//        }
+//    }
+
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "DomeHTTP is a Kotlin Multiplatform Module"
@@ -141,4 +156,3 @@ task iosTest {
 // configurations {
     // compileClasspath
 // }
-

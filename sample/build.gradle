@@ -11,13 +11,28 @@ android {
     defaultConfig {
         applicationId "io.vithor.sample.domehttp"
     }
+
+    signingConfigs {
+        release {
+            storeFile file("${rootProject.rootDir}/debug.keystore")
+            storePassword '123456'
+            keyAlias 'debug'
+            keyPassword '123456'
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation project(":DomeHTTP")
+                implementation project(":client")
             }
         }
     }

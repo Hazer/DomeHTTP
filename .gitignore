@@ -6,3 +6,4 @@
 DomeHTTP.podspec
 
 lib/build/*
+build/

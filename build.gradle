@@ -5,11 +5,16 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url "https://kotlin.bintray.com/kotlinx" }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://dl.bintray.com/jetbrains/kotlin-native-dependencies" }
+        maven { url "https://dl.bintray.com/hazer/maven/" }
 
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0-beta03'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.6'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:+"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4-jetbrains-3"
 
     }
 }
@@ -25,8 +30,9 @@ allprojects {
         mavenCentral()
         jcenter()
         maven { url "https://kotlin.bintray.com/kotlinx" }
-
+        maven { url "https://dl.bintray.com/hazer/maven/" }
     }
+
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile).all { task ->
         task.kotlinOptions.freeCompilerArgs += ["-Xobjc-generics",
@@ -34,4 +40,12 @@ allprojects {
                                                 "-Xuse-experimental=kotlin.ExperimentalMultiplatform"]
     }
 
+}
+subprojects {
+    apply plugin: 'maven-publish'
+
+    group 'io.vithor.dome-http'
+    version '0.0.8-alpha.1'
+
+    apply from: rootProject.file("gradle/publish-bintray.gradle")
 }

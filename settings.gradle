@@ -32,7 +32,7 @@ rootProject.name = 'DomeHTTP'
 enableFeaturePreview('GRADLE_METADATA')
 
 include ':lib'
-project(':lib').name = 'DomeHTTP'
+project(':lib').name = 'client'
 //rootProject.children.each {
 //    if (it.name == "lib")
 //        it.name = 'DomeHTTP'

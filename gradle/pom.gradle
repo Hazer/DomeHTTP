@@ -1,0 +1,23 @@
+//def pomConfig = {
+//    scm {
+//        url "https://github.com/Hazer/DomeHTTP.git"
+//    }
+//}
+//
+//project.ext.configureMavenCentralMetadata = { pom ->
+//    def root = asNode()
+//    root.appendNode('name', project.name)
+//    root.appendNode('description', 'Kotlin multiplatform HTTP Client library')
+//    root.appendNode('url', 'https://github.com/Hazer/DomeHTTP')
+//    root.children().last() + pomConfig
+//
+//    def dependenciesNode = asNode().getAt("dependencies")[0]
+//    if (dependenciesNode != null) {
+//        def dependencyNode = dependenciesNode.appendNode('dependency')
+//        dependencyNode.appendNode('groupId', "$group")
+//        dependencyNode.appendNode('artifactId', "$project.name")
+//        dependencyNode.appendNode('version', "$project.version")
+//    }
+//}
+//
+//project.ext.configurePom = pomConfig
