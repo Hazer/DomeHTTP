@@ -76,7 +76,8 @@ class KotlinxSerializer(
     }
 
     @PublishedApi
-    internal fun lookupSerializerByType(type: KClass<*>): KSerializer<*> {
+    internal fun lookupSerializerByType(type: KClass<*>, inList: Boolean): KSerializer<*> {
+       if (inList) listMappers[type]?.let { return it }
         mappers[type]?.let { return it }
         return (type.defaultSerializer() ?: type.serializer())
     }
@@ -89,14 +90,14 @@ class KotlinxSerializer(
     }
 
     override fun stringify(value: Any, typeInfo: TypeInfo): String {
-        val mapper = lookupSerializerByType(typeInfo.type)
+        val mapper = lookupSerializerByType(typeInfo.type, typeInfo.inList)
 
         @Suppress("UNCHECKED_CAST")
         return json.stringify(mapper as KSerializer<Any>, value)
     }
 
     override fun <T : Any> parse(data: RawData, typeInfo: TypeInfo): T {
-        val mapper = lookupSerializerByType(typeInfo.type)
+        val mapper = lookupSerializerByType(typeInfo.type, typeInfo.inList)
 
         @Suppress("UNCHECKED_CAST")
         return json.parse(mapper as KSerializer<Any>, data.asString()!!) as T

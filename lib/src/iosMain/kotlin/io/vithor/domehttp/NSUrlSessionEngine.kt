@@ -20,7 +20,7 @@ class NSUrlSessionEngine private constructor() : HttpEngine {
         }
     }
 
-    override suspend fun <R : Any> request(raw: DomeClient.Request<R>): DomeClient.RawResponse<R> {
+    override suspend fun <R : Any> request(raw: DomeClient.Request<R>): DomeClient.RawResponse {
         return suspendCancellableCoroutine { continuation ->
             try {
                 validatePayload(raw)
@@ -128,7 +128,7 @@ class NSUrlSessionEngine private constructor() : HttpEngine {
         processedRequest: DomeClient.Request<R>,
         receivedData: NSMutableData,
         response: NSHTTPURLResponse
-    ): DomeClient.RawResponse<R> {
+    ): DomeClient.RawResponse {
         return DomeClient.RawResponse(
             processedRequest,
             statusCode = response.statusCode.toInt(),
@@ -150,7 +150,7 @@ class NSUrlSessionEngine private constructor() : HttpEngine {
         processedRequest: DomeClient.Request<R>,
         receivedData: NSMutableData,
         response: NSHTTPURLResponse
-    ): DomeClient.RawResponse<R> {
+    ): DomeClient.RawResponse {
         val responseString = receivedData.string()!!
         println("Received: $responseString")
         val rawData = RawData.of(receivedData)

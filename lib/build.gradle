@@ -5,8 +5,15 @@ plugins {
     id("org.jetbrains.kotlin.native.cocoapods")
 }
 
-
 apply from: "${rootProject.rootDir}/gradle/android_mpp_commons.gradle"
+
+apply from: rootProject.file('gradle/simple_publish.gradle')
+
+android {
+    sourceSets.each {
+        it.manifest.srcFile "src/androidMain/AndroidManifest.xml"
+    }
+}
 
 repositories {
     google()
@@ -19,27 +26,16 @@ repositories {
 apply plugin: 'org.jetbrains.dokka'
 
 kotlin {
-    targets {
-        fromPreset(presets.android, 'androidLib')
-        jvm()
+    android() {
+        publishLibraryVariants("release")
+    }
+    jvm()
 
-        def buildForDevice = project.findProperty("kotlin.native.cocoapods.target") == "ios_arm"
-        if (buildForDevice) {
-            fromPreset(presets.iosArm64, "iOS64") {
-                compilations.main.extraOpts "-Xobjc-generics"
-            }
-            fromPreset(presets.iosArm32, "iOS32") {
-                compilations.main.extraOpts "-Xobjc-generics"
-            }
+    iosX64("ios")
 
-            def iOSMain = sourceSets.create("ios")
-            sourceSets["iOS64Main"].dependsOn(iOSMain)
-            sourceSets["iOS32Main"].dependsOn(iOSMain)
-        } else {
-            fromPreset(presets.iosX64, "ios") {
-                compilations.main.extraOpts "-Xobjc-generics"
-            }
-        }
+    if (project.findProperty("isItPublishing")?.toBoolean() == true) {
+        iosArm32("iosArm32")
+        iosArm64("iosArm64")
     }
 
     println(targets.names)
@@ -64,7 +60,7 @@ kotlin {
                 implementation kotlin('test-annotations-common')
             }
         }
-        androidLibMain {
+        androidMain {
             dependencies {
                 implementation kotlin('stdlib')
                 implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
@@ -75,7 +71,7 @@ kotlin {
                 implementation "com.squareup.okhttp3:okhttp:3.14.1"
             }
         }
-        androidLibTest {
+        androidTest {
             dependencies {
                 implementation kotlin('test')
                 implementation kotlin('test-junit')
@@ -112,6 +108,12 @@ kotlin {
                 
             }
         }
+        if (project.findProperty("isItPublishing")?.toBoolean() == true) {
+            iosArm32Main.dependsOn iosMain
+            iosArm32Test.dependsOn iosTest
+            iosArm64Main.dependsOn iosMain
+            iosArm64Test.dependsOn iosTest
+        }
     }
 
     sourceSets.all {
@@ -135,9 +137,15 @@ kotlin {
     cocoapods {
         // Configure fields required by CocoaPods.
         summary = "DomeHTTP is a Kotlin Multiplatform Module"
-        homepage = "https://vithor.io/io.vithor.domehttp"
+        homepage = "https://github.com/hazer/DomeHTTP"
     }
 }
+
+// workaround for https://youtrack.jetbrains.com/issue/KT-27170
+configurations {
+    compileClasspath
+}
+
 
 task iosTest {
     def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
@@ -152,7 +160,3 @@ task iosTest {
         }
     }
 }
-
-// configurations {
-    // compileClasspath
-// }

@@ -10,7 +10,7 @@ typealias Fields = List<Field>
 expect val DefaultDispatcher: CoroutineDispatcher
 
 interface HttpEngine {
-    suspend fun <R : Any> request(raw: DomeClient.Request<R>): DomeClient.RawResponse<R>
+    suspend fun <R: Any> request(raw: DomeClient.Request<R>): DomeClient.RawResponse
 }
 
 internal fun <R : Any> intercept(raw: DomeClient.Request<R>): DomeClient.Request<R> {

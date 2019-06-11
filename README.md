@@ -9,6 +9,10 @@ This project is a Kotlin Multiplatform HTTP Client, totally work-in-progress, im
 * Make it easy to replace the engine, if needed
 * Someday iOS target will work flawlessly
 
+## Challenges
+* Multi-threading in Native
+* Reflection API, maybe compile-time generated, in Native and JS
+
 ## Installation
 
 ```
@@ -17,16 +21,18 @@ repositories {
 }
 
 // Common Module
-implementation "io.vithor.dome-http:client-common:$domeVersion"
+implementation "io.vithor.libs:dome-http:$last_version"
 
 // Android Module
-implementation "io.vithor.dome-http:client-android:$domeVersion"
+implementation "io.vithor.libs:dome-http-android:$last_version"
 
 // iOS Module
-implementation "io.vithor.dome-http:client-ios:$domeVersion"
+implementation "io.vithor.libs:dome-http-ios:$last_version" // x86/Simulator
+implementation "io.vithor.libs:dome-http-iosArm32:$last_version"
+implementation "io.vithor.libs:dome-http-iosArm64:$last_version"
 
 // JVM Module
-implementation "io.vithor.dome-http:client-jvm:$domeVersion"
+implementation "io.vithor.libs:dome-http-jvm:$last_version"
 ```
 
 ## Usages
@@ -56,7 +62,7 @@ val todo = dome.get<Todo>("https://jsonplaceholder.typicode.com/todos/1").await(
 ```
 ```kotlin
 // GET request with configurations
-val todos = dome.get<List<Todo>>("https://jsonplaceholder.typicode.com/todos") {
+val todos: List<Todo> = dome.get<Todo>("https://jsonplaceholder.typicode.com/todos") {
     headers += mapOf(
         "X-Header-Name" to "header value"
     )
@@ -71,7 +77,8 @@ val todos = dome.get<List<Todo>>("https://jsonplaceholder.typicode.com/todos") {
 
     addQueryParam("another-param", "Mage")
 
-}.await()
+}.asList<Todo>().await()
+ // Because we have no Reflection API in iOS, we cannot write only dome.get<List<Todo>> and work with Kotlinx.Serialization, that's why `asList` exists
 ```
 ```kotlin
 // POST request with Json

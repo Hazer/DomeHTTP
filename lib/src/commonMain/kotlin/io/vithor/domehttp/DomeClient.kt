@@ -30,7 +30,25 @@ class DomeClient(engine: HttpEngineFactory, configurer: DomeClient.Config.() -> 
         url: String,
         crossinline requestConfig: Request.QueryConfig<R>.() -> Unit = {}
     ): Request<R> {
-        return request(HTTPMethod.Get, url, typeInfo<R>(), Request.QueryConfig(), requestConfig)
+        val typeInfo = typeInfo<R>()
+        val type = typeInfo.type
+        val reifiedType = typeInfo.reifiedType
+
+        println("Request typeInfo: $typeInfo,\n$type,\n$reifiedType")
+
+        when (typeInfo.type) {
+            is List<*> -> throw IllegalArgumentException("Right now you cannot call get with List<T>, use getList instead.")
+        }
+
+        return request(HTTPMethod.Get, url, typeInfo, Request.QueryConfig(), requestConfig)
+    }
+
+    @UseExperimental(ImplicitReflectionSerializer::class)
+    suspend inline fun <reified R : Any> getList(
+        url: String,
+        crossinline requestConfig: Request.QueryConfig<List<R>>.() -> Unit = {}
+    ): Request<List<R>> {
+        return request(HTTPMethod.Get, url, typeInfo<R>(true), Request.QueryConfig(), requestConfig)
     }
 
     @UseExperimental(ImplicitReflectionSerializer::class)
@@ -274,7 +292,7 @@ class DomeClient(engine: HttpEngineFactory, configurer: DomeClient.Config.() -> 
             return if (other is Request<*>) other.id == this.id else super.equals(other)
         }
 
-        suspend fun awaitRaw(coroutineContext: CoroutineContext = DefaultDispatcher): Response<ResponseType> =
+        suspend fun awaitResponse(coroutineContext: CoroutineContext = DefaultDispatcher): Response<ResponseType> =
             withContext(coroutineContext) {
                 val rawResponse = domeClient.engine.request(this@Request)
 
@@ -290,28 +308,34 @@ class DomeClient(engine: HttpEngineFactory, configurer: DomeClient.Config.() -> 
                         } catch (e: Throwable) {
                             Response<ResponseType>(
                                 rawResponse,
-                                Result.Failure(null, e)
+                                Result.Failure(null, DomeError(rawDataResult.valueOrNull, e))
                             )
                         }
                     }
                     is Result.Failure -> Response<ResponseType>(
                         rawResponse,
-                        Result.Failure(null, rawDataResult.error)
+                        Result.Failure(null, DomeError(rawDataResult.valueOrNull, rawDataResult.error))
                     )
                 }
             }
 
         suspend fun await(coroutineContext: CoroutineContext = DefaultDispatcher): ResponseType =
-            awaitRaw(coroutineContext).body.valueOrThrow
+            awaitResponse(coroutineContext).body.valueOrThrow
 
         suspend fun awaitString(coroutineContext: CoroutineContext = DefaultDispatcher): String? =
             withContext(coroutineContext) {
                 domeClient.engine.request(this@Request).result.valueOrNull?.asString()
             }
+
+        inline fun <reified R: Any> asList(): Request<List<R>> {
+            return Request(
+                domeClient, method, url, typeInfo<R>(true), payload, headers
+            )
+        }
     }
 
-    class RawResponse<ResponseType : Any> @PublishedApi internal constructor(
-        val request: Request<ResponseType>,
+    class RawResponse @PublishedApi internal constructor(
+        val request: Request<*>,
         val statusCode: Int,
         val result: Result<RawData>
     ) {
@@ -337,7 +361,7 @@ class DomeClient(engine: HttpEngineFactory, configurer: DomeClient.Config.() -> 
     }
 
     class Response<ResponseType : Any> @PublishedApi internal constructor(
-        val raw: RawResponse<ResponseType>,
+        val raw: RawResponse,
         val body: DomeClient.Result<ResponseType>
     ) {
         val statusCode

@@ -32,7 +32,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation project(":client")
+                implementation project(":dome-http")
             }
         }
     }
@@ -42,11 +42,17 @@ kotlin {
     }
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
+
+//    implementation 'io.vithor.libs:dome-http-android:0.0.8-alpha.3'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'

@@ -32,6 +32,6 @@ rootProject.name = 'DomeHTTP'
 enableFeaturePreview('GRADLE_METADATA')
 
 include ':lib'
-project(':lib').name = 'client'
+project(':lib').name = 'dome-http'
 
 include ':sample'

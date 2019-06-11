@@ -1,6 +1,9 @@
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+
+//apply from: project.rootProject.file('gradle/pom.gradle')
+
 // ------------- tasks
 task stubSources(type: Jar) {
     classifier = 'sources'
@@ -17,58 +20,10 @@ publishing {
         maven { url = 'https://dl.bintray.com/hazer/maven/' }
         mavenLocal()
     }
+//
     publications.all {
-        def type = it.name
-//        println("Type is: $type")
-//
-//        logger.info("Type is: $type")
-        switch (type) {
-//            case 'kotlinMultiplatform':
-//                task sourcesJar(type: Jar) {
-//                    classifier 'sources'
-//                    from kotlin.sourceSets.commonMain.kotlin
-//                }
-//
-//                it.artifactId = "${project.name}-native"
-//                it.artifact emptyJar
-//                it.artifact stubJavadoc
-//                it.artifact sourcesJar
-//                break
-//            case 'metadata':
-//            case 'jvm':
-            case 'android':
-//            case 'js':
-//            case 'ios':
-//            case 'native':
-                it.artifactId = "${project.name}-$type"
-                break
-        }
-
+//        pom.withXml(configureMavenCentralMetadata)
     }
-//
-////        pom.withXml { pom ->
-////            def dependenciesNode = asNode().getAt("dependencies")[0]
-////            if (dependenciesNode == null) return
-////            dependenciesNode.dependency.each {
-////                it.artifactId.each { node ->
-////                    def artifactId = node.text()
-////                    if (!artifactId.startsWith("dome") || !artifactId.endsWith("native")) return
-////
-////                    switch (type) {
-////                        case 'metadata':
-////                            node.setValue("${artifactId[0..-8]}")
-////                            break
-////                        case 'jvm':
-////                        case 'android':
-////                        case 'ios':
-////                        case 'js':
-////                            node.setValue("${artifactId[0..-8]}-$type")
-////                            break
-////                    }
-////                }
-////            }
-////        }
-//    }
 
 
 //    kotlin.targets.all { target ->

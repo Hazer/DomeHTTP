@@ -9,6 +9,7 @@ import io.vithor.domehttp.OkHttpEngine
 import io.vithor.sample.domehttp.Todo
 import io.vithor.sample.domehttp.TodoCreate
 import io.vithor.sample.domehttp.viewModelScope
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -21,7 +22,7 @@ class MainViewModel : ViewModel() {
             write = 30.seconds
         }
 
-        serialization(KotlinxSerializer(strict = true)) {
+        serialization(KotlinxSerializer(strict = false)) {
             register(Todo.serializer())
             register(TodoCreate.serializer())
         }
@@ -36,30 +37,34 @@ class MainViewModel : ViewModel() {
 
     }
 
-    fun fetchTodo() = viewModelScope.launch {
+    val handler = CoroutineExceptionHandler { coroutineContext, throwable ->
+        Log.e("Aehoo", "Deu ruim ${throwable.message}", throwable)
+    }
+
+    fun fetchTodo() = viewModelScope.launch(handler) {
         todo.postValue(
             dome.get<Todo>("https://jsonplaceholder.typicode.com/todos/1")
                 .await(Dispatchers.IO)
         )
 
-//        val todos = dome.get<List<Todo>>("https://jsonplaceholder.typicode.com/todos") {
-//            headers += mapOf(
-//                "X-Header-Name" to "header value"
-//            )
-//
-//            addHeader("X-Another-Header", "Another value")
-//
-//            params = listOf(
-//                "excerpt" to "yes",
-//                "user" to "Vithorio",
-//                "language" to "pt-BR"
-//            )
-//
-//            addQueryParam("another-param", "Mage")
-//
-//        }.await(Dispatchers.IO)
-//
-//        Log.d("Aehoo", "We got todos: ${todos.size}\n$todos")
+        val todos: List<Todo> = dome.get<Todo>("https://jsonplaceholder.typicode.com/todos") {
+            headers += mapOf(
+                "X-Header-Name" to "header value"
+            )
+
+            addHeader("X-Another-Header", "Another value")
+
+            params = listOf(
+                "excerpt" to "yes",
+                "user" to "Vithorio",
+                "language" to "pt-BR"
+            )
+
+            addQueryParam("another-param", "Mage")
+
+        }.asList<Todo>().await(Dispatchers.IO)
+
+        Log.d("Aehoo", "We got todos: ${todos.size}\n$todos")
 
         val resp = dome.post<TodoCreate>("https://jsonplaceholder.typicode.com/todos") {
             jsonOf(

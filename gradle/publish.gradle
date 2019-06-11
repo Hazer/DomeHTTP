@@ -16,7 +16,7 @@
 //
 //task emptyJar(type: Jar) {
 //}
-//
+
 //publishing {
 //    repositories {
 //        maven { url = 'https://dl.bintray.com/hazer/maven' }

@@ -30,7 +30,7 @@ class OkHttpEngine(
         }
     }
 
-    override suspend fun <R : Any> request(raw: DomeClient.Request<R>): DomeClient.RawResponse<R> {
+    override suspend fun <R : Any> request(raw: DomeClient.Request<R>): DomeClient.RawResponse {
         return suspendCancellableCoroutine { continuation ->
             try {
                 validatePayload(raw)
@@ -43,7 +43,7 @@ class OkHttpEngine(
 
             val requestBuilder = Request.Builder()
 
-            when (val method = processedRequest.method) {
+            when (processedRequest.method) {
                 HTTPMethod.Delete -> {
                     val body: RequestBody
                     try {
@@ -108,7 +108,7 @@ class OkHttpEngine(
                             responseAsString = safe { response.body()?.string() }
                         ))
 
-                    val responseObj = DomeClient.RawResponse<R>(
+                    val responseObj = DomeClient.RawResponse(
                         processedRequest,
                         response.code(),
                         responsePayload

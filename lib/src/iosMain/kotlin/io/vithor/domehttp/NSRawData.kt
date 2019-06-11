@@ -3,16 +3,15 @@
 package io.vithor.domehttp
 
 import kotlinx.atomicfu.atomic
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.readBytes
-import kotlinx.cinterop.toCValues
+import kotlinx.cinterop.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import platform.Foundation.NSData
 import platform.Foundation.NSInputStream
 import platform.Foundation.inputStreamWithData
+import platform.darwin.NSUInteger
 import platform.darwin.UInt16
 import platform.posix.uint8_tVar
 import kotlin.math.min
@@ -46,6 +45,7 @@ class NSRawStream(private val inputStream: NSInputStream, capacity: Int) : RawSt
     private val channel: Channel<ByteArray> = Channel(Channel.UNLIMITED)
     private val started = atomic(false)
 
+    @UseExperimental(ExperimentalCoroutinesApi::class)
     private suspend fun execute() {
         if (started.compareAndSet(expect = false, update = true)) {
             memScoped {
@@ -55,7 +55,7 @@ class NSRawStream(private val inputStream: NSInputStream, capacity: Int) : RawSt
                 inputStream.open()
 
                 do {
-                    readSize = inputStream.read(buffer = buffer, maxLength = bufferSize.toULong()).toInt()
+                    readSize = inputStream.read(buffer = buffer, maxLength = bufferSize.toNSUInteger()).toInt()
 
                     when {
                         readSize > 0 -> {
@@ -91,6 +91,7 @@ class NSRawStream(private val inputStream: NSInputStream, capacity: Int) : RawSt
         }
     }
 }
+
 
 //suspend fun <T: NSStream, R> T.use(block: suspend (T) -> R): R {
 //    var throwable: Throwable? = null

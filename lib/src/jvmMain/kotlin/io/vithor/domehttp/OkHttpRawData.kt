@@ -2,6 +2,7 @@
 
 package io.vithor.domehttp
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ class OkRawStream(private val inputStream: InputStream, capacity: Int) : RawStre
     private val channel: Channel<ByteArray> = Channel(Channel.UNLIMITED)
     private val started = AtomicBoolean(false)
 
+    @UseExperimental(ExperimentalCoroutinesApi::class)
     private suspend fun execute() {
         if (started.compareAndSet(false, true)) {
             inputStream.use {
